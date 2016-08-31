@@ -1,4 +1,5 @@
 
+#include <vector>
 #include <opencv2/core/core.hpp>
 #include <opencv2/ml/ml.hpp>
 
@@ -9,7 +10,6 @@ class ScoreReader {
 
    public:
       //Public functions:
-      ScoreReader();
       void trainReader( const int, const int, const char*);
       void saveReader( const char* );
       void loadReader( const char* );

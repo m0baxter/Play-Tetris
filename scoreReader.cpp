@@ -1,6 +1,7 @@
 
-//  g++-5 -std=c++11 readScore.cpp -o readScore.exe `pkg-config --cflags --libs opencv`
+//  g++-5 -std=c++11 scoreReader.cpp -o scoreReader.exe `pkg-config --cflags --libs opencv`
 
+#include "scoreReader.hpp"
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -12,58 +13,23 @@
 #include <opencv2/highgui/highgui.hpp>
 
 
-std::string GetMatType(const cv::Mat& mat) {
+void ScoreReader :: saveReader( const char* path ) {
+   /* Save the trained SVM to disk. */
 
-   const int mtype = mat.type();
+   svm.save(path);
 
-   switch (mtype) {
+} 
 
-      case CV_8UC1:  return "CV_8UC1";
-      case CV_8UC2:  return "CV_8UC2";
-      case CV_8UC3:  return "CV_8UC3";
-      case CV_8UC4:  return "CV_8UC4";
 
-      case CV_8SC1:  return "CV_8SC1";
-      case CV_8SC2:  return "CV_8SC2";
-      case CV_8SC3:  return "CV_8SC3";
-      case CV_8SC4:  return "CV_8SC4";
+void ScoreReader :: loadReader( const char* path ) {
+   /* Load a trained SVM from disk. */
 
-      case CV_16UC1: return "CV_16UC1";
-      case CV_16UC2: return "CV_16UC2";
-      case CV_16UC3: return "CV_16UC3";
-      case CV_16UC4: return "CV_16UC4";
+   svm.load(path);
 
-      case CV_16SC1: return "CV_16SC1";
-      case CV_16SC2: return "CV_16SC2";
-      case CV_16SC3: return "CV_16SC3";
-      case CV_16SC4: return "CV_16SC4";
-
-      case CV_32SC1: return "CV_32SC1";
-      case CV_32SC2: return "CV_32SC2";
-      case CV_32SC3: return "CV_32SC3";
-      case CV_32SC4: return "CV_32SC4";
-
-      case CV_32FC1: return "CV_32FC1";
-      case CV_32FC2: return "CV_32FC2";
-      case CV_32FC3: return "CV_32FC3";
-      case CV_32FC4: return "CV_32FC4";
-
-      case CV_64FC1: return "CV_64FC1";
-      case CV_64FC2: return "CV_64FC2";
-      case CV_64FC3: return "CV_64FC3";
-      case CV_64FC4: return "CV_64FC4";
-
-      default:
-         return "Invalid type of matrix!";
-   }
 }
 
 
-
-
-
-
-cv::Mat readLabels( const int num, const char* path ) {
+cv::Mat ScoreReader :: readLabels( const int num, const char* path ) {
    /* Read in the label information in file at path. */
 
    std::ifstream readFile( path );
@@ -86,7 +52,7 @@ cv::Mat readLabels( const int num, const char* path ) {
 }
 
 
-std::vector<cv::Mat> getScoreDigits( const int figNum ) {
+std::vector<cv::Mat> ScoreReader :: getScoreDigits( const int figNum ) {
    /* Parses a Tetris screenshot into six images of the digits of the score. */
 
    cv::Mat image;
@@ -94,8 +60,6 @@ std::vector<cv::Mat> getScoreDigits( const int figNum ) {
    std::vector<cv::Mat> digits;
 
    path << "/home/baxter/.fceux/snaps/TETRIS-" << figNum << ".png";
-
-   std::cout << path.str().c_str() << std::endl;
 
    image = cv::imread( path.str().c_str(), CV_LOAD_IMAGE_COLOR);
    cv::cvtColor(image, image, CV_BGR2GRAY);
@@ -115,7 +79,7 @@ std::vector<cv::Mat> getScoreDigits( const int figNum ) {
 }
 
 
-cv::Mat genTrainingData( const int figMin, const int figMax ) {
+cv::Mat ScoreReader :: genTrainingData( const int figMin, const int figMax ) {
    /* Generates a matrix from all of the sample images for training SVM. */
 
    int numFigs = figMax - figMin + 1;
@@ -138,38 +102,74 @@ cv::Mat genTrainingData( const int figMin, const int figMax ) {
 }
 
 
-int main() {
+float ScoreReader :: matToScore( const cv::Mat &digits ) {
+   /* Takes a 6x1 matrix of digits and calculates the score. */
 
-   cv::Mat data = genTrainingData( 0, 213 );
-   cv::Mat labels = readLabels( 214, "/home/baxter/.fceux/snaps/scores.txt" );
+   int tens[6] = { 100000, 10000, 1000, 100, 10, 1 };
 
-   //Select SVM parameters:
-   CvSVMParams params;
-   params.svm_type = CvSVM::C_SVC;
-   params.kernel_type = CvSVM::LINEAR;
-   //params.term_crit = cvTermCriteria( CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, 1000, FLT_EPSILON );
-
-   //Create SVM:
-   CvSVM SVM;
-   std::cout << SVM.train( data, labels, cv::Mat(), cv::Mat(), params) << std::endl;
-   std::cout << "true:  " << true << std::endl;
-   std::cout << "false: " << false << std::endl;
-
-   cv::Mat results;
-   cv::Mat test = genTrainingData( 214, 214 );
-
-   SVM.predict( test, results );
-
-   std::cout << results.rows << "  " << results.cols << std::endl;
+   int score = 0;
 
    for ( int i = 0; i < 6; i++ ) {
 
-      std::cout << results.at<float>(i) << std::endl;
-   
+      score += tens[i] * ( (int) digits.at<float>(i) );
    }
 
-   std::cout << results << std::endl;
-   std::cout << "Type: " << GetMatType( results ) << std::endl;
+   return score;
+
+}
+
+
+void ScoreReader :: trainReader( const int figMin, const int figMax, const char* labelPath ) {
+   /* Trains the SVM on the screen shots numbered figMin - figMax with labels given by
+    * file at labelPath. */
+
+   cv::Mat data = genTrainingData( figMin, figMax );
+   cv::Mat labels = readLabels( figMax - figMin + 1, labelPath );
+
+   CvSVMParams params;
+   params.svm_type = CvSVM::C_SVC;
+   params.kernel_type = CvSVM::LINEAR;
+
+   svm.train( data, labels, cv::Mat(), cv::Mat(), params);
+
+}
+
+
+int ScoreReader :: operator()( const int figNum ) {
+   /* Reads in the score from the screenshot labeled by figNum. */
+
+   cv::Mat results;
+   cv::Mat test = genTrainingData( figNum, figNum );
+   svm.predict( test, results );
+
+   return matToScore(results);
+
+}
+
+
+int main() {
+
+   ScoreReader reader1;
+   reader1.trainReader( 0, 213, "/home/baxter/.fceux/snaps/scores.txt" );
+
+   for ( int i = 214; i <= 217; i++ ) {
+      
+      std::cout << "Score: " << reader1(i) << std::endl;
+
+   }
+
+   reader1.saveReader( "test.txt" );
+
+   std::cout << std::endl;
+
+   ScoreReader reader2;
+   reader2.loadReader( "test.txt" );
+
+   for ( int i = 214; i <= 217; i++ ) {
+      
+      std::cout << "Score: " << reader2(i) << std::endl;
+
+   }
 
    return 0;
 

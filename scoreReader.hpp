@@ -13,7 +13,7 @@ class ScoreReader {
       void trainReader( const int, const int, const char*);
       void saveReader( const char* );
       void loadReader( const char* );
-      int operator()( const int );
+      int operator()( const int = 0 );
 
    private:
       //The SVM:

@@ -31,3 +31,6 @@
 #vim backups:
 *.swp
 
+#g++ dependency files:
+*.d
+

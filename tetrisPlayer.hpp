@@ -1,4 +1,5 @@
 
+#include "scoreReader.hpp"
 #include <X11/Xlib.h>
 
 extern "C" {
@@ -19,6 +20,7 @@ class TetrisPlayer {
       //private things:
       Display* display;
       xdo_t *xdo;
+      ScoreReader scoreReader;
 
 };
 

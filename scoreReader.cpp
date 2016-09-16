@@ -59,7 +59,7 @@ std::vector<cv::Mat> ScoreReader :: getScoreDigits( const int figNum ) {
    std::stringstream path;
    std::vector<cv::Mat> digits;
 
-   path << "/home/baxter/.fceux/snaps/TETRIS-" << figNum << ".png";
+   path << "./scoreData/TETRIS-" << figNum << ".png";
 
    image = cv::imread( path.str().c_str(), CV_LOAD_IMAGE_COLOR);
    cv::cvtColor(image, image, CV_BGR2GRAY);

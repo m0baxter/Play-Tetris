@@ -1,8 +1,10 @@
 
 #include "tetrisPlayer.hpp"
+#include "scoreReader.hpp"
 #include "X11Interactions.hpp"
 #include <X11/Xlib.h>
 #include <iostream>
+#include <sys/stat.h>
 
 extern "C" {
    #include <xdo.h> 
@@ -14,6 +16,17 @@ TetrisPlayer :: TetrisPlayer() {
 
    display = XOpenDisplay( NULL );
    xdo = xdo_new(NULL);
+
+   struct stat buf;
+
+   if ( stat( "svm.txt", &buf ) == 0 ) {
+      scoreReader.loadReader( "svm.txt" );
+   }
+
+   else {
+      scoreReader.trainReader( 0, 213, "./scoreData/scores.txt" );
+      scoreReader.saveReader( "svm.txt" );
+   }
 
 }
 

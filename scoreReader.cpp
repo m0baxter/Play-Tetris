@@ -52,14 +52,19 @@ cv::Mat ScoreReader :: readLabels( const int num, const char* path ) {
 }
 
 
-std::vector<cv::Mat> ScoreReader :: getScoreDigits( const int figNum ) {
+std::vector<cv::Mat> ScoreReader :: getScoreDigits( const int figNum, const std::string dir ) {
    /* Parses a Tetris screenshot into six images of the digits of the score. */
 
    cv::Mat image;
    std::stringstream path;
    std::vector<cv::Mat> digits;
 
-   path << "./scoreData/TETRIS-" << figNum << ".png";
+   char full[200];
+   realpath(dir.c_str(), full);
+
+   path << full << "/TETRIS-" << figNum << ".png";
+
+   std::cout << path.str() << std::endl;
 
    image = cv::imread( path.str().c_str(), CV_LOAD_IMAGE_COLOR);
    cv::cvtColor(image, image, CV_BGR2GRAY);
@@ -79,7 +84,7 @@ std::vector<cv::Mat> ScoreReader :: getScoreDigits( const int figNum ) {
 }
 
 
-cv::Mat ScoreReader :: genTrainingData( const int figMin, const int figMax ) {
+cv::Mat ScoreReader :: genTrainingData( const int figMin, const int figMax, const std::string dir ) {
    /* Generates a matrix from all of the sample images for training SVM. */
 
    int numFigs = figMax - figMin + 1;
@@ -89,7 +94,7 @@ cv::Mat ScoreReader :: genTrainingData( const int figMin, const int figMax ) {
 
    for ( int i = 0; i < numFigs; i++ ) {
 
-      std::vector<cv::Mat> digits = getScoreDigits( i + figMin );
+      std::vector<cv::Mat> digits = getScoreDigits( i + figMin, dir );
 
       for ( int j = 0; j < 6; j++ ) {
 
@@ -123,7 +128,7 @@ void ScoreReader :: trainReader( const int figMin, const int figMax, const char*
    /* Trains the SVM on the screen shots numbered figMin - figMax with labels given by
     * file at labelPath. */
 
-   cv::Mat data = genTrainingData( figMin, figMax );
+   cv::Mat data = genTrainingData( figMin, figMax, "./scoreData" );
    cv::Mat labels = readLabels( figMax - figMin + 1, labelPath );
 
    CvSVMParams params;
@@ -139,7 +144,7 @@ int ScoreReader :: operator()( const int figNum ) {
    /* Reads in the score from the screenshot labeled by figNum. */
 
    cv::Mat results;
-   cv::Mat test = genTrainingData( figNum, figNum );
+   cv::Mat test = genTrainingData( figNum, figNum, "/home/baxter/.fceux/snaps" );
    svm.predict( test, results );
 
    return matToScore(results);

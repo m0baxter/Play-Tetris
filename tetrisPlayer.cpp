@@ -70,3 +70,25 @@ void TetrisPlayer :: pressButton( const int button ) {
 
 }
 
+
+int TetrisPlayer :: getScore() {
+
+   focusOnEmulator( display );
+
+   xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Pause", 0);
+   xdo_send_keysequence_window(xdo, CURRENTWINDOW, "F12", 0);
+
+   struct stat buf;
+
+   while ( stat( "/home/baxter/.fceux/snaps/TETRIS-0.png", &buf ) != 0 ) {}
+
+   int score = scoreReader();
+
+   while ( stat( "/home/baxter/.fceux/snaps/TETRIS-0.png", &buf ) == 0 ) {
+      system("rm -f /home/baxter/.fceux/snaps/TETRIS-0.png");
+   }
+
+   xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Pause", 0);
+
+   return score;
+}

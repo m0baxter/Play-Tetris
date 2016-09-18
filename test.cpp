@@ -42,7 +42,9 @@ void testPlayer() {
    std::uniform_int_distribution<std::mt19937::result_type> dist(1,6);
 
    while (true) {
-      player.pressButton(dist(rnd));
+      //player.pressButton(dist(rnd));
+      std::cout << player.getScore() << std::endl;
+      sleep(3);
    }
 
    return;
@@ -52,7 +54,7 @@ void testPlayer() {
 
 int main() {
 
-   testReader();
+   //testReader();
    testPlayer();
 
    return 0;

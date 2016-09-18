@@ -12,12 +12,11 @@ extern "C" {
 class TetrisPlayer {
 
    public:
-      //public things:
       TetrisPlayer();
       void pressButton( const int );
+      int getScore();
 
    private:
-      //private things:
       Display* display;
       xdo_t *xdo;
       ScoreReader scoreReader;

@@ -6,6 +6,8 @@
 #include <iostream>
 #include <sys/stat.h>
 
+#include <exception>
+
 extern "C" {
    #include <xdo.h> 
 }
@@ -73,6 +75,8 @@ void TetrisPlayer :: pressButton( const int button ) {
 
 int TetrisPlayer :: getScore() {
 
+   int score = -1;
+
    focusOnEmulator( display );
 
    xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Pause", 0);
@@ -82,13 +86,25 @@ int TetrisPlayer :: getScore() {
 
    while ( stat( "/home/baxter/.fceux/snaps/TETRIS-0.png", &buf ) != 0 ) {}
 
-   int score = scoreReader();
+   while (score == -1) {
+      
+      try {
+         score = scoreReader();
+      }
+      catch (std::exception &except) {
+         //std::cout << "Exception caught: " << except.what() << std::endl;
+         continue;
+      }
+   }
 
    while ( stat( "/home/baxter/.fceux/snaps/TETRIS-0.png", &buf ) == 0 ) {
-      system("rm -f /home/baxter/.fceux/snaps/TETRIS-0.png");
+      system("rm /home/baxter/.fceux/snaps/TETRIS-0.png");
    }
 
    xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Pause", 0);
 
+   usleep(1);
+
    return score;
 }
+

@@ -1,6 +1,7 @@
 
 #include "scoreReader.hpp"
 #include <X11/Xlib.h>
+#include <thread>
 
 extern "C" {
    #include <xdo.h>
@@ -13,6 +14,7 @@ class TetrisPlayer {
 
    public:
       TetrisPlayer();
+      ~TetrisPlayer();
       void pressButton( const int );
       int getScore();
 
@@ -20,6 +22,7 @@ class TetrisPlayer {
       Display* display;
       xdo_t *xdo;
       ScoreReader scoreReader;
+      std::thread emulator;
 
 };
 

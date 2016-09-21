@@ -6,6 +6,8 @@
 #include <iostream>
 #include <sys/stat.h>
 
+#include <thread>
+
 #include <exception>
 
 extern "C" {
@@ -29,6 +31,19 @@ TetrisPlayer :: TetrisPlayer() {
       scoreReader.trainReader( 0, 213, "./scoreData/scores.txt" );
       scoreReader.saveReader( "svm.txt" );
    }
+
+   emulator = std::thread( &system, "nes /home/baxter/Downloads/tet/TETRIS.NES &" );
+
+}
+
+
+TetrisPlayer :: ~TetrisPlayer()  {
+   /* Destructor, cleans up by making sure that the second thread dies. */
+
+   focusOnEmulator( display );
+   xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Ctrl+q", 0);
+
+   emulator.join();
 
 }
 

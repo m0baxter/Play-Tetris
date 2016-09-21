@@ -4,6 +4,7 @@
 #include <iostream>
 #include <random>
 
+#include <exception>
 
 void testReader() {
 
@@ -38,15 +39,23 @@ void testPlayer() {
 
    TetrisPlayer player;
 
-   std::mt19937 rnd;
-   rnd.seed( std::random_device()() );
-   std::uniform_int_distribution<std::mt19937::result_type> dist(1,6);
+//   std::mt19937 rnd;
+//   rnd.seed( std::random_device()() );
+//   std::uniform_int_distribution<std::mt19937::result_type> dist(1,6);
+//
+//   while (true) {
+//      //player.pressButton(dist(rnd));
+//      std::cout << player.getScore() << std::endl;
+//      sleep(3);
+//   }
 
-   while (true) {
-      //player.pressButton(dist(rnd));
-      std::cout << player.getScore() << std::endl;
-      sleep(3);
-   }
+   sleep(2);
+
+   std::cout << "Hi" << std::endl;
+
+   int i = 1/0;
+
+   sleep(2);
 
    return;
 
@@ -55,8 +64,14 @@ void testPlayer() {
 
 int main() {
 
-   //testReader();
-   testPlayer();
+   try {
+      //testReader();
+      testPlayer();
+   }
+   catch (std::exception &except) {
+      //std::cout << "Exception caught: " << except.what() << std::endl;
+      return 1;
+   }
 
    return 0;
 

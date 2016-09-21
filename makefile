@@ -5,7 +5,7 @@ COMP = g++-5
 FLAGS = -std=c++11
 
 OPENCV = `pkg-config --cflags --libs opencv`
-XLIBS = -lX11 -lXtst -lXext -lxdo
+XLIBS = -lX11 -lXtst -lXext -lxdo -lpthread
 
 SRC = $(wildcard *.cpp)
 OBJ = $(SRC:.cpp=.o)
@@ -45,7 +45,7 @@ cleandata:
 
 
 cleanall:
-	rm -f *.o *.d *.exe
+	rm -f *.o *.d *.exe *.txt
 	rm -fr $(TAR_DIRS)
 
 

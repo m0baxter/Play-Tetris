@@ -17,6 +17,7 @@ class TetrisPlayer {
       ~TetrisPlayer();
       void pressButton( const int );
       int getScore();
+      void newGame();
 
    private:
       Display* display;

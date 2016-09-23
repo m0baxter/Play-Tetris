@@ -39,23 +39,19 @@ void testPlayer() {
 
    TetrisPlayer player;
 
-//   std::mt19937 rnd;
-//   rnd.seed( std::random_device()() );
-//   std::uniform_int_distribution<std::mt19937::result_type> dist(1,6);
-//
-//   while (true) {
-//      //player.pressButton(dist(rnd));
-//      std::cout << player.getScore() << std::endl;
-//      sleep(3);
-//   }
+   std::cout << "here" << std::endl;
 
-   sleep(2);
+   std::mt19937 rnd;
+   rnd.seed( std::random_device()() );
+   std::uniform_int_distribution<std::mt19937::result_type> dist(1,6);
 
-   std::cout << "Hi" << std::endl;
+   player.newGame();
 
-   int i = 1/0;
-
-   sleep(2);
+   while (true) {
+      player.pressButton(dist(rnd));
+      //std::cout << player.getScore() << std::endl;
+      sleep(3);
+   }
 
    return;
 

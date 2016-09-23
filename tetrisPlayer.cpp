@@ -33,6 +33,7 @@ TetrisPlayer :: TetrisPlayer() {
    }
 
    emulator = std::thread( &system, "nes /home/baxter/Downloads/tet/TETRIS.NES &" );
+   sleep(2);
 
 }
 
@@ -44,6 +45,26 @@ TetrisPlayer :: ~TetrisPlayer()  {
    xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Ctrl+q", 0);
 
    emulator.join();
+
+}
+
+
+void TetrisPlayer :: newGame() {
+   /* Starts a new game of tetris. */
+
+   focusOnEmulator( display );
+   xdo_send_keysequence_window(xdo, CURRENTWINDOW, "F7", 0);
+   sleep(1);
+   std::cout << "1" << std::endl;
+   xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Return", 10000);
+   sleep(1);
+   std::cout << "2" << std::endl;
+   xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Return", 10000);
+   sleep(1);
+   std::cout << "3" << std::endl;
+   xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Return", 10000);
+
+   return;
 
 }
 

@@ -52,17 +52,15 @@ TetrisPlayer :: ~TetrisPlayer()  {
 void TetrisPlayer :: newGame() {
    /* Starts a new game of tetris. */
 
-   focusOnEmulator( display );
-   xdo_send_keysequence_window(xdo, CURRENTWINDOW, "F7", 0);
-   sleep(1);
-   std::cout << "1" << std::endl;
-   xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Return", 10000);
-   sleep(1);
-   std::cout << "2" << std::endl;
-   xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Return", 10000);
-   sleep(1);
-   std::cout << "3" << std::endl;
-   xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Return", 10000);
+   //pressButton(8);
+   sleep(8);
+   pressButton(7);
+   sleep(2);
+   pressButton(7);
+   sleep(2);
+   pressButton(7);
+   sleep(2);
+   pressButton(7);
 
    return;
 
@@ -77,26 +75,41 @@ void TetrisPlayer :: pressButton( const int button ) {
    switch ( button ) {
       case 1:
          xdo_send_keysequence_window(xdo, CURRENTWINDOW, "a", 10000);
+         std::cout << "a" <<std::endl;
          break;
 
       case 2:
          xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Down", 10000);
+         std::cout << "Dn" <<std::endl;
          break;
 
       case 3:
          xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Left", 10000);
+         std::cout << "Left" <<std::endl;
          break;
 
       case 4:
          xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Right", 10000);
+         std::cout << "Right" <<std::endl;
          break;
 
       case 5:
          xdo_send_keysequence_window(xdo, CURRENTWINDOW, "s", 10000);
+         std::cout << "b" <<std::endl;
          break;
 
       case 6:
          xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Up", 10000);
+         std::cout << "Up" <<std::endl;
+         break;
+
+      case 7:
+         xdo_send_keysequence_window(xdo, CURRENTWINDOW, "Return", 10000);
+         std::cout << "Start" <<std::endl;
+         break;
+
+      case 8:
+         xdo_send_keysequence_window(xdo, CURRENTWINDOW, "F7", 10000);
          break;
 
       default:

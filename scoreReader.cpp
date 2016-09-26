@@ -1,6 +1,4 @@
 
-//  g++-5 -std=c++11 scoreReader.cpp -o scoreReader.exe `pkg-config --cflags --libs opencv`
-
 #include "scoreReader.hpp"
 #include <string>
 #include <sstream>
